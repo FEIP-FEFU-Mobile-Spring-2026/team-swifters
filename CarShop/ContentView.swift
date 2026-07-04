@@ -40,6 +40,7 @@ struct ContentView: View {
 
 private struct CatalogScreen: View {
     @ObservedObject var viewModel: CatalogViewModel
+    @State private var selectedProduct: Product?
 
     var body: some View {
         NavigationStack {
@@ -58,6 +59,12 @@ private struct CatalogScreen: View {
             .navigationTitle("Каталог")
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.catalogBackground)
+        }
+        .sheet(item: $selectedProduct) { product in
+            ProductDetailView(product: product)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
         }
     }
 
@@ -81,7 +88,9 @@ private struct CatalogScreen: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(spacing: 12) {
                         ForEach(viewModel.visibleProducts) { product in
-                            NavigationLink(value: product) {
+                            Button {
+                                selectedProduct = product
+                            } label: {
                                 ProductCard(product: product)
                             }
                             .buttonStyle(.plain)
@@ -92,9 +101,6 @@ private struct CatalogScreen: View {
                     .padding(.bottom, 36)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationDestination(for: Product.self) { product in
-                    ProductDetailView(product: product)
-                }
             }
         }
     }
