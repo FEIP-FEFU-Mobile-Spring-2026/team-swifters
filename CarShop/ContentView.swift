@@ -9,7 +9,7 @@ struct ContentView: View {
     @StateObject private var viewModel: CatalogViewModel
     @AppStorage("app.selectedTab") private var selectedTabRawValue = AppTab.catalog.rawValue
 
-    init(repository: any ProductRepository = LocalProductRepository()) {
+    init(repository: any ProductRepository = RemoteProductRepository()) {
         _viewModel = StateObject(wrappedValue: CatalogViewModel(repository: repository))
     }
 
@@ -19,6 +19,10 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if viewModel.isOffline {
+                OfflineBanner()
+            }
+
             Group {
                 switch selectedTab {
                 case .catalog:
@@ -32,9 +36,29 @@ struct ContentView: View {
             BottomNavigation(selectedTabRawValue: $selectedTabRawValue)
         }
         .background(Color.catalogBackground)
+        .animation(.easeInOut(duration: 0.25), value: viewModel.isOffline)
         .task {
             await viewModel.loadIfNeeded()
         }
+    }
+}
+
+private struct OfflineBanner: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "wifi.slash")
+                .font(.system(size: 13, weight: .semibold))
+            Text("Нет сети")
+                .font(.system(size: 13, weight: .medium))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(Color(red: 0.72, green: 0.45, blue: 0.20))
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 
@@ -81,7 +105,7 @@ private struct CatalogScreen: View {
             if viewModel.visibleProducts.isEmpty {
                 ContentUnavailableView(
                     "В этой категории пока пусто",
-                    systemImage: "car.side",
+                    systemImage: "square.grid.2x2",
                     description: Text("Выберите другую категорию")
                 )
             } else {
@@ -111,29 +135,31 @@ private struct CategoryTabs: View {
     @Binding var selectedCategoryId: String
 
     var body: some View {
-        HStack(spacing: 8) {
-            ForEach(categories) { category in
-                Button {
-                    selectedCategoryId = category.id
-                } label: {
-                    Text(category.name)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(selectedCategoryId == category.id ? .white : .primary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 36)
-                        .background(
-                            Capsule()
-                                .fill(selectedCategoryId == category.id ? Color.brandBrown : Color.tabBackground)
-                        )
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(categories) { category in
+                    Button {
+                        selectedCategoryId = category.id
+                    } label: {
+                        Text(category.name)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(selectedCategoryId == category.id ? .white : .primary)
+                            .lineLimit(1)
+                            .fixedSize()
+                            .padding(.horizontal, 16)
+                            .frame(height: 36)
+                            .background(
+                                Capsule()
+                                    .fill(selectedCategoryId == category.id ? Color.brandBrown : Color.tabBackground)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selectedCategoryId == category.id ? .isSelected : [])
                 }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selectedCategoryId == category.id ? .isSelected : [])
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
         .background(.white)
     }
 }
@@ -204,11 +230,11 @@ struct ProductImage: View {
                         ProgressView().tint(Color.brandBrown)
                     }
                 @unknown default:
-                    imagePlaceholder(systemName: "car.side")
+                    imagePlaceholder(systemName: "photo")
                 }
             }
         } else {
-            imagePlaceholder(systemName: "car.side")
+            imagePlaceholder(systemName: "photo")
         }
     }
 
@@ -228,7 +254,7 @@ private struct LoadingView: View {
             ProgressView()
                 .controlSize(.large)
                 .tint(Color.brandBrown)
-            Text("Загружаем автомобили…")
+            Text("Загружаем каталог…")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -244,7 +270,7 @@ private struct CatalogErrorView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "car.side.front.open")
+            Image(systemName: "wifi.exclamationmark")
                 .font(.system(size: 54))
                 .foregroundStyle(Color.brandBrown)
 
@@ -274,7 +300,7 @@ private struct EmptyCartView: View {
                 .foregroundStyle(Color.brandBrown)
             Text("Корзина пока пуста")
                 .font(.title3.bold())
-            Text("Добавленные автомобили появятся здесь")
+            Text("Добавленные товары появятся здесь")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

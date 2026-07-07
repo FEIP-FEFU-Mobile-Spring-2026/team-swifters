@@ -170,7 +170,11 @@ struct ProductDetailView: View {
                 imageUrl: "asset://buga",
                 tags: ["New"],
                 categoryId: "cat_hypercars",
-                sizes: ["Chiron", "Pur Sport", "Super Sport"],
+                sizes: [
+                    ProductSize(id: "chiron", name: "Chiron"),
+                    ProductSize(id: "pur_sport", name: "Pur Sport"),
+                    ProductSize(id: "super_sport", name: "Super Sport")
+                ],
                 material: "8,0 л W16, 1 500 л.с.",
                 weight: "1 995 кг",
                 season: "Полный",
