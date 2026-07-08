@@ -11,11 +11,17 @@ private let tagSeparator = "\u{1}"
 final class CatalogCache: CatalogCaching {
     static let shared = CatalogCache()
 
-    private let container: NSPersistentContainer
+    let container: NSPersistentContainer
 
     init() {
         let model = CatalogCache.makeModel()
         container = NSPersistentContainer(name: "CatalogCache", managedObjectModel: model)
+
+        if let description = container.persistentStoreDescriptions.first {
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+        }
+
         container.loadPersistentStores { _, error in
             if let error {
                 print("CoreData: не удалось загрузить хранилище — \(error)")
@@ -53,7 +59,13 @@ final class CatalogCache: CatalogCaching {
             ("sortIndex", .integer64AttributeType)
         ])
 
-        model.entities = [category, product, size]
+        let cartItem = entity(name: "CDCartItem", attributes: [
+            ("productId", .stringAttributeType),
+            ("sizeId", .stringAttributeType),
+            ("quantity", .integer64AttributeType)
+        ])
+
+        model.entities = [category, product, size, cartItem]
         return model
     }
 
