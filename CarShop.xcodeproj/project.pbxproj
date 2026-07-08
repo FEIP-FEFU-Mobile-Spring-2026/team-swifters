@@ -6,25 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		F229D6902F19FBE000E61B88 /* astonMartin.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F229D68F2F19FBDF00E61B88 /* astonMartin.jpg */; };
-		F229D6942F19FF9000E61B88 /* lamba.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F229D6912F19FF9000E61B88 /* lamba.jpeg */; };
-		F229D6952F19FF9000E61B88 /* maser.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F229D6922F19FF9000E61B88 /* maser.jpg */; };
-		F229D6962F19FF9000E61B88 /* buga.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F229D6932F19FF9000E61B88 /* buga.jpeg */; };
-/* End PBXBuildFile section */
+/* Begin PBXContainerItemProxy section */
+		F2A600072F4A000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F229D66E2F188AD500E61B88 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F229D6752F188AD500E61B88;
+			remoteInfo = CarShop;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		F229D6762F188AD500E61B88 /* CarShop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarShop.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F229D68F2F19FBDF00E61B88 /* astonMartin.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = astonMartin.jpg; sourceTree = "<group>"; };
-		F229D6912F19FF9000E61B88 /* lamba.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lamba.jpeg; sourceTree = "<group>"; };
-		F229D6922F19FF9000E61B88 /* maser.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = maser.jpg; sourceTree = "<group>"; };
-		F229D6932F19FF9000E61B88 /* buga.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = buga.jpeg; sourceTree = "<group>"; };
+		F2A600012F4A000000000001 /* CarShopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarShopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F229D6782F188AD500E61B88 /* CarShop */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CarShop;
+			sourceTree = "<group>";
+		};
+		F2A600022F4A000000000001 /* CarShopTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CarShopTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -37,17 +42,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F2A600042F4A000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		F229D66D2F188AD500E61B88 = {
 			isa = PBXGroup;
 			children = (
-				F229D6932F19FF9000E61B88 /* buga.jpeg */,
-				F229D6912F19FF9000E61B88 /* lamba.jpeg */,
-				F229D6922F19FF9000E61B88 /* maser.jpg */,
-				F229D68F2F19FBDF00E61B88 /* astonMartin.jpg */,
 				F229D6782F188AD500E61B88 /* CarShop */,
+				F2A600022F4A000000000001 /* CarShopTests */,
 				F229D6772F188AD500E61B88 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				F229D6762F188AD500E61B88 /* CarShop.app */,
+				F2A600012F4A000000000001 /* CarShopTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,6 +95,29 @@
 			productReference = F229D6762F188AD500E61B88 /* CarShop.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F2A600062F4A000000000001 /* CarShopTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F2A6000B2F4A000000000001 /* Build configuration list for PBXNativeTarget "CarShopTests" */;
+			buildPhases = (
+				F2A600032F4A000000000001 /* Sources */,
+				F2A600042F4A000000000001 /* Frameworks */,
+				F2A600052F4A000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F2A600082F4A000000000001 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F2A600022F4A000000000001 /* CarShopTests */,
+			);
+			name = CarShopTests;
+			packageProductDependencies = (
+			);
+			productName = CarShopTests;
+			productReference = F2A600012F4A000000000001 /* CarShopTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -97,6 +130,10 @@
 				TargetAttributes = {
 					F229D6752F188AD500E61B88 = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					F2A600062F4A000000000001 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = F229D6752F188AD500E61B88;
 					};
 				};
 			};
@@ -115,6 +152,7 @@
 			projectRoot = "";
 			targets = (
 				F229D6752F188AD500E61B88 /* CarShop */,
+				F2A600062F4A000000000001 /* CarShopTests */,
 			);
 		};
 /* End PBXProject section */
@@ -124,10 +162,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F229D6942F19FF9000E61B88 /* lamba.jpeg in Resources */,
-				F229D6952F19FF9000E61B88 /* maser.jpg in Resources */,
-				F229D6962F19FF9000E61B88 /* buga.jpeg in Resources */,
-				F229D6902F19FBE000E61B88 /* astonMartin.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F2A600052F4A000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +182,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F2A600032F4A000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F2A600082F4A000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F229D6752F188AD500E61B88 /* CarShop */;
+			targetProxy = F2A600072F4A000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		F229D67F2F188AD700E61B88 /* Debug */ = {
@@ -327,6 +383,58 @@
 			};
 			name = Release;
 		};
+		F2A600092F4A000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K4SW45WF9A;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = manya.CarShopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarShop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarShop";
+			};
+			name = Debug;
+		};
+		F2A6000A2F4A000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K4SW45WF9A;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = manya.CarShopTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarShop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarShop";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -344,6 +452,15 @@
 			buildConfigurations = (
 				F229D6822F188AD700E61B88 /* Debug */,
 				F229D6832F188AD700E61B88 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F2A6000B2F4A000000000001 /* Build configuration list for PBXNativeTarget "CarShopTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F2A600092F4A000000000001 /* Debug */,
+				F2A6000A2F4A000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

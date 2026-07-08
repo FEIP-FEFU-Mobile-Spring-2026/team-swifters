@@ -26,13 +26,13 @@ final class CatalogViewModel: ObservableObject {
 
     private let repository: any ProductRepository
     private let cache: any CatalogCaching
-    private let monitor: NetworkMonitor
+    private let monitor: any NetworkMonitoring
     private let defaults: UserDefaults
 
     init(
         repository: any ProductRepository,
         cache: any CatalogCaching = CatalogCache.shared,
-        monitor: NetworkMonitor = NetworkMonitor(),
+        monitor: any NetworkMonitoring = NetworkMonitor(),
         defaults: UserDefaults = .standard
     ) {
         self.repository = repository
@@ -43,10 +43,12 @@ final class CatalogViewModel: ObservableObject {
         self.isOffline = !monitor.isConnected
 
         self.monitor.onChange = { [weak self] connected in
-            guard let self else { return }
-            self.isOffline = !connected
-            if connected, self.isShowingCachedData {
-                Task { await self.refreshFromNetwork() }
+            Task { @MainActor in
+                guard let self else { return }
+                self.isOffline = !connected
+                if connected, self.isShowingCachedData {
+                    await self.refreshFromNetwork()
+                }
             }
         }
     }

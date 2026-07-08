@@ -44,10 +44,10 @@ struct ProductDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Комплектация")
+                        Text("Размер")
                             .font(.headline)
 
-                        configurationPicker
+                        sizePicker
                     }
 
                     HStack {
@@ -99,9 +99,9 @@ struct ProductDetailView: View {
         } message: {
             Text(
                 """
-                Двигатель: \(product.engine)
+                Материал: \(product.material)
                 Вес: \(product.weight)
-                Привод: \(product.drivetrain)
+                Сезон: \(product.season)
                 Страна производства: \(product.countryOfOrigin)
                 """
             )
@@ -135,7 +135,7 @@ struct ProductDetailView: View {
         .padding(.top, 8)
     }
 
-    private var configurationPicker: some View {
+    private var sizePicker: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(product.sizes) { size in
