@@ -66,6 +66,11 @@ final class CatalogViewModel: ObservableObject {
         return catalog.items.filter { $0.categoryId == selectedCategoryId }
     }
 
+    var loadedCatalog: ProductCatalog? {
+        if case let .loaded(catalog) = state { return catalog }
+        return nil
+    }
+
     func loadIfNeeded() async {
         guard case .idle = state else { return }
         await load()

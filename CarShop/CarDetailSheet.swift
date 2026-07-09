@@ -2,13 +2,16 @@ import SwiftUI
 
 struct ProductDetailView: View {
     let product: Product
+    @ObservedObject var cart: CartViewModel
+
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedConfiguration: String?
+    @State private var selectedSize: ProductSize?
     @State private var isShowingDetails = false
 
-    init(product: Product) {
+    init(product: Product, cart: CartViewModel) {
         self.product = product
-        _selectedConfiguration = State(initialValue: product.configurations.first)
+        self.cart = cart
+        _selectedSize = State(initialValue: product.sizes.first)
     }
 
     var body: some View {
@@ -54,16 +57,21 @@ struct ProductDetailView: View {
 
                         Spacer()
 
-                        if let selectedConfiguration {
-                            Text(selectedConfiguration)
+                        if let selectedSize {
+                            Text(selectedSize.name)
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.secondary)
                         }
                     }
 
-                    Button("В корзину") { }
-                        .buttonStyle(PrimaryButtonStyle())
-                        .padding(.bottom, 8)
+                    Button("В корзину") {
+                        guard let selectedSize else { return }
+                        cart.add(product: product, sizeId: selectedSize.id)
+                        dismiss()
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(selectedSize == nil)
+                    .padding(.bottom, 8)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
@@ -130,56 +138,28 @@ struct ProductDetailView: View {
     private var configurationPicker: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(product.configurations, id: \.self) { configuration in
+                ForEach(product.sizes) { size in
                     Button {
-                        selectedConfiguration = configuration
+                        selectedSize = size
                     } label: {
-                        Text(configuration)
+                        Text(size.name)
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(selectedConfiguration == configuration ? .white : .primary)
+                            .foregroundStyle(selectedSize == size ? .white : .primary)
                             .padding(.horizontal, 18)
                             .frame(minWidth: 52, minHeight: 42)
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .fill(
-                                        selectedConfiguration == configuration
+                                        selectedSize == size
                                             ? Color.brandBrown
                                             : Color.tabBackground
                                     )
                             )
                     }
                     .buttonStyle(.plain)
-                    .accessibilityAddTraits(
-                        selectedConfiguration == configuration ? .isSelected : []
-                    )
+                    .accessibilityAddTraits(selectedSize == size ? .isSelected : [])
                 }
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ProductDetailView(
-            product: Product(
-                id: "preview",
-                name: "Bugatti Chiron",
-                shortDescription: "Гиперкар с двигателем W16",
-                longDescription: "Сочетание динамики, роскоши и инженерного искусства.",
-                priceInKopecks: 35_000_000_000,
-                imageUrl: "asset://buga",
-                tags: ["New"],
-                categoryId: "cat_hypercars",
-                sizes: [
-                    ProductSize(id: "chiron", name: "Chiron"),
-                    ProductSize(id: "pur_sport", name: "Pur Sport"),
-                    ProductSize(id: "super_sport", name: "Super Sport")
-                ],
-                material: "8,0 л W16, 1 500 л.с.",
-                weight: "1 995 кг",
-                season: "Полный",
-                countryOfOrigin: "Франция"
-            )
-        )
     }
 }

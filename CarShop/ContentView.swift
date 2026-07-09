@@ -7,6 +7,7 @@ private enum AppTab: String {
 
 struct ContentView: View {
     @StateObject private var viewModel: CatalogViewModel
+    @StateObject private var cartViewModel = CartViewModel()
     @AppStorage("app.selectedTab") private var selectedTabRawValue = AppTab.catalog.rawValue
 
     init(repository: any ProductRepository = RemoteProductRepository()) {
@@ -26,14 +27,21 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .catalog:
-                    CatalogScreen(viewModel: viewModel)
+                    CatalogScreen(viewModel: viewModel, cart: cartViewModel)
                 case .cart:
-                    EmptyCartView()
+                    CartView(
+                        cart: cartViewModel,
+                        catalog: viewModel.loadedCatalog,
+                        onGoHome: { selectedTabRawValue = AppTab.catalog.rawValue }
+                    )
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            BottomNavigation(selectedTabRawValue: $selectedTabRawValue)
+            BottomNavigation(
+                selectedTabRawValue: $selectedTabRawValue,
+                cartBadge: cartViewModel.badgeCount
+            )
         }
         .background(Color.catalogBackground)
         .animation(.easeInOut(duration: 0.25), value: viewModel.isOffline)
@@ -64,6 +72,7 @@ private struct OfflineBanner: View {
 
 private struct CatalogScreen: View {
     @ObservedObject var viewModel: CatalogViewModel
+    @ObservedObject var cart: CartViewModel
     @State private var selectedProduct: Product?
 
     var body: some View {
@@ -85,7 +94,7 @@ private struct CatalogScreen: View {
             .background(Color.catalogBackground)
         }
         .sheet(item: $selectedProduct) { product in
-            ProductDetailView(product: product)
+            ProductDetailView(product: product, cart: cart)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
@@ -292,45 +301,46 @@ private struct CatalogErrorView: View {
     }
 }
 
-private struct EmptyCartView: View {
-    var body: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "cart")
-                .font(.system(size: 52, weight: .light))
-                .foregroundStyle(Color.brandBrown)
-            Text("Корзина пока пуста")
-                .font(.title3.bold())
-            Text("Добавленные товары появятся здесь")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.catalogBackground)
-    }
-}
-
 private struct BottomNavigation: View {
     @Binding var selectedTabRawValue: String
+    let cartBadge: Int
 
     var body: some View {
         HStack(spacing: 0) {
             tabButton(.catalog, title: "Каталог", systemImage: "square.grid.2x2")
-            tabButton(.cart, title: "Корзина", systemImage: "cart")
+            tabButton(.cart, title: "Корзина", systemImage: "cart", badge: cartBadge)
         }
         .padding(.top, 8)
         .padding(.bottom, 4)
         .background(.white.shadow(.drop(color: .black.opacity(0.08), radius: 8, y: -2)))
     }
 
-    private func tabButton(_ tab: AppTab, title: String, systemImage: String) -> some View {
+    private func tabButton(
+        _ tab: AppTab,
+        title: String,
+        systemImage: String,
+        badge: Int = 0
+    ) -> some View {
         let isSelected = selectedTabRawValue == tab.rawValue
 
         return Button {
             selectedTabRawValue = tab.rawValue
         } label: {
             VStack(spacing: 4) {
-                Image(systemName: systemImage)
-                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                        .frame(width: 28, height: 24)
+
+                    if badge > 0 {
+                        Text("\(badge)")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(minWidth: 16, minHeight: 16)
+                            .background(Circle().fill(Color.brandBrown))
+                            .offset(x: 10, y: -8)
+                    }
+                }
                 Text(title)
                     .font(.system(size: 11, weight: .medium))
             }
