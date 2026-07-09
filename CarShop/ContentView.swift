@@ -1,212 +1,335 @@
 import SwiftUI
 
-struct Car: Identifiable {
-    let id = UUID()
-    let name: String
-    let description: String
-    let price: String
-    let imageName: String
-    let colors: [ColorOption]
-
-    struct ColorOption: Identifiable {
-        let id = UUID()
-        let name: String
-        let color: Color
-    }
+private enum AppTab: String {
+    case catalog
+    case cart
 }
 
 struct ContentView: View {
-    @State private var quantity2 = 1
-    @State private var showCarDetail = false
+    @StateObject private var viewModel: CatalogViewModel
+    @AppStorage("app.selectedTab") private var selectedTabRawValue = AppTab.catalog.rawValue
 
-    let cars: [Car] = [
-        Car(
-            name: "Bugatti Chiron",
-            description: "Суперкар с максимальной скоростью 420 км/ч и двигателем 1500 л.с.",
-            price: "$3 500 000",
-            imageName: "buga",
-            colors: [
-                .init(name: "Черный", color: .black),
-                .init(name: "Белый", color: .white),
-                .init(name: "Красный", color: .red),
-                .init(name: "Желтый", color: .yellow)
-            ]
-        ),
-        Car(
-            name: "Aston Martin DB12",
-            description: "Элегантный спорткар с роскошным интерьером и V8 двигателем.",
-            price: "$250 000",
-            imageName: "astonMartin",
-            colors: []
-        ),
-        Car(
-            name: "Lamborghini Huracán",
-            description: "Агрессивный дизайн, полный привод и 640 л.с. — чистая страсть на дороге.",
-            price: "$280 000",
-            imageName: "lamba",
-            colors: []
-        ),
-        Car(
-            name: "Maserati MC20",
-            description: "Итальянская элегантность и мощь в одном автомобиле с двигателем Nettuno.",
-            price: "$220 000",
-            imageName: "maser",
-            colors: []
-        )
-    ]
+    init(repository: any ProductRepository = LocalProductRepository()) {
+        _viewModel = StateObject(wrappedValue: CatalogViewModel(repository: repository))
+    }
+
+    private var selectedTab: AppTab {
+        AppTab(rawValue: selectedTabRawValue) ?? .catalog
+    }
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Категории
-                HStack(spacing: 8) {
-                    ForEach(["Новинки", "SportCar", "Limited"], id: \.self) { item in
-                        Text(item)
-                            .font(.callout)
-                            .foregroundColor(item == "Новинки" ? .white : .black)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                Capsule()
-                                    .fill(item == "Новинки" ? Color(red: 0.5, green: 0.3, blue: 0.2) : Color(red: 0.9, green: 0.9, blue: 0.9))
-                            )
-                    }
+        VStack(spacing: 0) {
+            Group {
+                switch selectedTab {
+                case .catalog:
+                    CatalogScreen(viewModel: viewModel)
+                case .cart:
+                    EmptyCartView()
                 }
-                .padding(.horizontal)
-                .padding(.top, 12)
-                .background(Color.white)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                Spacer().frame(height: 8)
+            BottomNavigation(selectedTabRawValue: $selectedTabRawValue)
+        }
+        .background(Color.catalogBackground)
+        .task {
+            await viewModel.loadIfNeeded()
+        }
+    }
+}
 
-                Rectangle()
-                    .fill(Color.gray.opacity(0.1))
-                    .frame(height: 1)
-                    .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
-                    .padding(.horizontal)
+private struct CatalogScreen: View {
+    @ObservedObject var viewModel: CatalogViewModel
 
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: 6) {
-                        ForEach(cars.indices, id: \.self) { index in
-                            HStack(alignment: .top, spacing: 16) {
-                                Image(cars[index].imageName)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 120, height: 120)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .clipped()
+    var body: some View {
+        NavigationStack {
+            Group {
+                switch viewModel.state {
+                case .idle, .loading:
+                    LoadingView()
+                case let .failed(message):
+                    CatalogErrorView(message: message) {
+                        Task { await viewModel.load() }
+                    }
+                case .loaded:
+                    catalogContent
+                }
+            }
+            .navigationTitle("Каталог")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color.catalogBackground)
+        }
+    }
 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(cars[index].name)
-                                        .font(.title2)
-                                        .fontWeight(.medium)
+    private var catalogContent: some View {
+        VStack(spacing: 0) {
+            CategoryTabs(
+                categories: viewModel.categories,
+                selectedCategoryId: $viewModel.selectedCategoryId
+            )
 
-                                    Text(cars[index].description)
-                                        .font(.body)
-                                        .foregroundColor(.secondary)
+            Divider()
+                .overlay(Color.black.opacity(0.06))
 
-                                    if index == 1 {
-                                        HStack(spacing: 8) {
-                                            Button(action: {
-                                                if quantity2 > 1 { quantity2 -= 1 }
-                                            }) {
-                                                Text("-")
-                                                    .font(.headline)
-                                                    .foregroundColor(.black)
-                                                    .padding(.horizontal, 8)
-                                                    .padding(.vertical, 8)
-                                            }
-                                            .buttonStyle(PlainButtonStyle())
-
-                                            Text("\(quantity2)")
-                                                .font(.headline)
-                                                .foregroundColor(Color(red: 0.5, green: 0.3, blue: 0.2))
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 8)
-
-                                            Button(action: { quantity2 += 1 }) {
-                                                Text("+")
-                                                    .font(.headline)
-                                                    .foregroundColor(.black)
-                                                    .padding(.horizontal, 8)
-                                                    .padding(.vertical, 8)
-                                            }
-                                            .buttonStyle(PlainButtonStyle())
-                                        }
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Color(red: 0.9, green: 0.9, blue: 0.9))
-                                        )
-                                    } else {
-                                        Text(cars[index].price)
-                                            .font(.title3)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(Color(red: 0.5, green: 0.3, blue: 0.2))
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 8)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(Color(red: 0.95, green: 0.9, blue: 0.85))
-                                            )
-                                    }
-                                }
-                                .padding(.trailing, 10)
+            if viewModel.visibleProducts.isEmpty {
+                ContentUnavailableView(
+                    "В этой категории пока пусто",
+                    systemImage: "car.side",
+                    description: Text("Выберите другую категорию")
+                )
+            } else {
+                ScrollView(.vertical, showsIndicators: true) {
+                    LazyVStack(spacing: 12) {
+                        ForEach(viewModel.visibleProducts) { product in
+                            NavigationLink(value: product) {
+                                ProductCard(product: product)
                             }
-                            .padding(.horizontal)
-                            .id(index)
-                            .frame(height: index == 3 ? 120 : 170)
-                            .clipped()
-                            .onTapGesture {
-                                if index == 0 {
-                                    showCarDetail = true
-                                }
-                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .padding(.top, 8)
-                    .padding(.bottom, -8)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 36)
                 }
-                .background(Color.white)
-
-                Rectangle()
-                    .fill(Color.gray.opacity(0.1))
-                    .frame(height: 1)
-                    .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
-                    .padding(.horizontal)
-
-                HStack(spacing: 50) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "list.bullet")
-                            .font(.title2)
-                            .foregroundColor(.black)
-                        Text("Меню")
-                            .font(.caption)
-                            .foregroundColor(.black)
-                    }
-
-                    VStack(spacing: 4) {
-                        Image(systemName: "cart")
-                            .font(.title2)
-                            .foregroundColor(.black)
-                        Text("Корзина")
-                            .font(.caption)
-                            .foregroundColor(.black)
-                    }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationDestination(for: Product.self) { product in
+                    ProductDetailView(product: product)
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.white)
-                .shadow(radius: 3)
-            }
-            .navigationBarHidden(true)
-            .sheet(isPresented: $showCarDetail) {
-                CarDetailSheet(car: cars[0])
             }
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+private struct CategoryTabs: View {
+    let categories: [ProductCategory]
+    @Binding var selectedCategoryId: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(categories) { category in
+                Button {
+                    selectedCategoryId = category.id
+                } label: {
+                    Text(category.name)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(selectedCategoryId == category.id ? .white : .primary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 36)
+                        .background(
+                            Capsule()
+                                .fill(selectedCategoryId == category.id ? Color.brandBrown : Color.tabBackground)
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selectedCategoryId == category.id ? .isSelected : [])
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.white)
     }
+}
+
+private struct ProductCard: View {
+    let product: Product
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            ProductImage(imageUrl: product.imageUrl)
+                .frame(width: 126, height: 126)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 7) {
+                Text(product.name)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Text(product.shortDescription)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+
+                Spacer(minLength: 0)
+
+                Text(product.formattedPrice)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.brandBrown)
+                    .padding(.horizontal, 12)
+                    .frame(height: 32)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(Color.priceBackground)
+                    )
+            }
+            .frame(maxWidth: .infinity, minHeight: 126, alignment: .leading)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.white)
+                .shadow(color: .black.opacity(0.05), radius: 10, y: 4)
+        )
+        .contentShape(Rectangle())
+    }
+}
+
+struct ProductImage: View {
+    let imageUrl: String
+
+    var body: some View {
+        if imageUrl.hasPrefix("asset://") {
+            let assetName = String(imageUrl.dropFirst("asset://".count))
+            Image(assetName)
+                .resizable()
+                .scaledToFill()
+        } else if let url = URL(string: imageUrl) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case let .success(image):
+                    image.resizable().scaledToFill()
+                case .failure:
+                    imagePlaceholder(systemName: "exclamationmark.triangle")
+                case .empty:
+                    ZStack {
+                        Color.tabBackground
+                        ProgressView().tint(Color.brandBrown)
+                    }
+                @unknown default:
+                    imagePlaceholder(systemName: "car.side")
+                }
+            }
+        } else {
+            imagePlaceholder(systemName: "car.side")
+        }
+    }
+
+    private func imagePlaceholder(systemName: String) -> some View {
+        ZStack {
+            Color.tabBackground
+            Image(systemName: systemName)
+                .font(.title2)
+                .foregroundStyle(Color.brandBrown)
+        }
+    }
+}
+
+private struct LoadingView: View {
+    var body: some View {
+        VStack(spacing: 14) {
+            ProgressView()
+                .controlSize(.large)
+                .tint(Color.brandBrown)
+            Text("Загружаем автомобили…")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.catalogBackground)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct CatalogErrorView: View {
+    let message: String
+    let retry: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "car.side.front.open")
+                .font(.system(size: 54))
+                .foregroundStyle(Color.brandBrown)
+
+            Text("Произошла ошибка")
+                .font(.title3.bold())
+
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Button("Повторить загрузку", action: retry)
+                .buttonStyle(PrimaryButtonStyle())
+                .padding(.top, 8)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.catalogBackground)
+    }
+}
+
+private struct EmptyCartView: View {
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "cart")
+                .font(.system(size: 52, weight: .light))
+                .foregroundStyle(Color.brandBrown)
+            Text("Корзина пока пуста")
+                .font(.title3.bold())
+            Text("Добавленные автомобили появятся здесь")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.catalogBackground)
+    }
+}
+
+private struct BottomNavigation: View {
+    @Binding var selectedTabRawValue: String
+
+    var body: some View {
+        HStack(spacing: 0) {
+            tabButton(.catalog, title: "Каталог", systemImage: "square.grid.2x2")
+            tabButton(.cart, title: "Корзина", systemImage: "cart")
+        }
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .background(.white.shadow(.drop(color: .black.opacity(0.08), radius: 8, y: -2)))
+    }
+
+    private func tabButton(_ tab: AppTab, title: String, systemImage: String) -> some View {
+        let isSelected = selectedTabRawValue == tab.rawValue
+
+        return Button {
+            selectedTabRawValue = tab.rawValue
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                Text(title)
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundStyle(isSelected ? Color.brandBrown : Color.secondary)
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct PrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.brandBrown.opacity(configuration.isPressed ? 0.8 : 1))
+            )
+    }
+}
+
+extension Color {
+    static let brandBrown = Color(red: 0.58, green: 0.40, blue: 0.31)
+    static let priceBackground = Color(red: 0.96, green: 0.92, blue: 0.89)
+    static let tabBackground = Color(red: 0.94, green: 0.94, blue: 0.94)
+    static let catalogBackground = Color(red: 0.975, green: 0.972, blue: 0.968)
+}
+
+#Preview {
+    ContentView()
 }

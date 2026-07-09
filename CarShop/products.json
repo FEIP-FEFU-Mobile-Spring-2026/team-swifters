@@ -1,0 +1,88 @@
+{
+  "categories": [
+    { "id": "cat_hypercars", "name": "Гиперкары" },
+    { "id": "cat_supercars", "name": "Суперкары" }
+  ],
+  "items": [
+    {
+      "id": "car_bugatti_chiron",
+      "name": "Bugatti Chiron",
+      "shortDescription": "Гиперкар с двигателем W16 мощностью 1500 л.с.",
+      "longDescription": "Bugatti Chiron сочетает выдающуюся динамику, полный привод и роскошную отделку. Максимальная скорость ограничена на отметке 420 км/ч.",
+      "priceInKopecks": 35000000000,
+      "imageUrl": "asset://buga",
+      "tags": ["New", "Limited"],
+      "categoryId": "cat_hypercars"
+    },
+    {
+      "id": "car_koenigsegg_jesko",
+      "name": "Koenigsegg Jesko",
+      "shortDescription": "Трековый гиперкар с активной аэродинамикой.",
+      "longDescription": "Jesko получил лёгкий карбоновый кузов, девятиступенчатую трансмиссию и двигатель V8 с двойным турбонаддувом.",
+      "priceInKopecks": 31000000000,
+      "imageUrl": "asset://koenigseggJesko",
+      "tags": ["New", "Limited"],
+      "categoryId": "cat_hypercars"
+    },
+    {
+      "id": "car_rimac_nevera",
+      "name": "Rimac Nevera",
+      "shortDescription": "Электрический гиперкар мощностью более 1900 л.с.",
+      "longDescription": "Четыре электромотора Nevera управляют каждым колесом отдельно, обеспечивая феноменальный разгон и точную управляемость.",
+      "priceInKopecks": 24000000000,
+      "imageUrl": "asset://rimacNevera",
+      "tags": ["Electric"],
+      "categoryId": "cat_hypercars"
+    },
+    {
+      "id": "car_pagani_huayra",
+      "name": "Pagani Huayra",
+      "shortDescription": "Итальянский гиперкар ручной сборки с V12.",
+      "longDescription": "Huayra объединяет активную аэродинамику, карбон-титановый монокок и интерьер, созданный как произведение искусства.",
+      "priceInKopecks": 30000000000,
+      "imageUrl": "asset://paganiHuayra",
+      "tags": ["Limited"],
+      "categoryId": "cat_hypercars"
+    },
+    {
+      "id": "car_lamborghini_huracan",
+      "name": "Lamborghini Huracán",
+      "shortDescription": "Полный привод, атмосферный V10 и бескомпромиссный дизайн.",
+      "longDescription": "Lamborghini Huracán дарит мгновенный отклик атмосферного двигателя V10 и точную управляемость на дороге и треке.",
+      "priceInKopecks": 2800000000,
+      "imageUrl": "asset://lamba",
+      "tags": ["Popular"],
+      "categoryId": "cat_supercars"
+    },
+    {
+      "id": "car_maserati_mc20",
+      "name": "Maserati MC20",
+      "shortDescription": "Итальянский суперкар с двигателем Nettuno.",
+      "longDescription": "Лёгкий карбоновый монокок, двигатель Nettuno и лаконичный итальянский дизайн делают MC20 быстрым и комфортным суперкаром.",
+      "priceInKopecks": 2200000000,
+      "imageUrl": "asset://maser",
+      "tags": ["New"],
+      "categoryId": "cat_supercars"
+    },
+    {
+      "id": "car_ferrari_sf90",
+      "name": "Ferrari SF90 Stradale",
+      "shortDescription": "Гибридный суперкар с полным приводом и 1000 л.с.",
+      "longDescription": "SF90 Stradale сочетает двигатель V8 и три электромотора, предлагая динамику гоночного автомобиля для обычных дорог.",
+      "priceInKopecks": 5200000000,
+      "imageUrl": "asset://ferrariSF90",
+      "tags": ["New", "Hybrid"],
+      "categoryId": "cat_supercars"
+    },
+    {
+      "id": "car_porsche_911_gt3rs",
+      "name": "Porsche 911 GT3 RS",
+      "shortDescription": "Трековая версия 911 с атмосферным оппозитным двигателем.",
+      "longDescription": "911 GT3 RS использует активную аэродинамику, облегчённый кузов и настройки шасси, разработанные для гоночной трассы.",
+      "priceInKopecks": 3600000000,
+      "imageUrl": "asset://porscheGT3RS",
+      "tags": ["Popular"],
+      "categoryId": "cat_supercars"
+    }
+  ]
+}
