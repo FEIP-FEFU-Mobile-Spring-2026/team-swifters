@@ -12,6 +12,11 @@ struct ProductCategory: Identifiable, Decodable, Hashable {
     static let new = ProductCategory(id: "new", name: "Новинки")
 }
 
+struct ProductSize: Identifiable, Decodable, Hashable {
+    let id: String
+    let name: String
+}
+
 struct Product: Identifiable, Decodable, Hashable {
     let id: String
     let name: String
@@ -21,6 +26,15 @@ struct Product: Identifiable, Decodable, Hashable {
     let imageUrl: String
     let tags: [String]
     let categoryId: String
+    let sizes: [ProductSize]
+    let material: String
+    let weight: String
+    let season: String
+    let countryOfOrigin: String
+
+    var configurations: [String] { sizes.map(\.name) }
+    var engine: String { material }
+    var drivetrain: String { season }
 
     var formattedPrice: String {
         let formatter = NumberFormatter()
