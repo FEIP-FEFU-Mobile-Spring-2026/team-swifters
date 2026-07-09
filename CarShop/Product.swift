@@ -21,6 +21,15 @@ struct Product: Identifiable, Decodable, Hashable {
     let imageUrl: String
     let tags: [String]
     let categoryId: String
+    let sizes: [String]
+    let material: String
+    let weight: String
+    let season: String
+    let countryOfOrigin: String
+
+    var configurations: [String] { sizes }
+    var engine: String { material }
+    var drivetrain: String { season }
 
     var formattedPrice: String {
         let formatter = NumberFormatter()
