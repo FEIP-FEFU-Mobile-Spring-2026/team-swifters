@@ -221,12 +221,7 @@ struct ProductImage: View {
     let imageUrl: String
 
     var body: some View {
-        if imageUrl.hasPrefix("asset://") {
-            let assetName = String(imageUrl.dropFirst("asset://".count))
-            Image(assetName)
-                .resizable()
-                .scaledToFill()
-        } else if let url = URL(string: imageUrl) {
+        if let url = URL(string: imageUrl) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case let .success(image):

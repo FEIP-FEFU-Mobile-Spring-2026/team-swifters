@@ -1,7 +1,12 @@
 import Foundation
 import Network
 
-final class NetworkMonitor {
+protocol NetworkMonitoring: AnyObject {
+    var isConnected: Bool { get }
+    var onChange: ((Bool) -> Void)? { get set }
+}
+
+final class NetworkMonitor: NetworkMonitoring {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor")
 

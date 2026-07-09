@@ -8,9 +8,11 @@ final class CartViewModel: ObservableObject {
 
     private let store: any CartCaching
 
-    init(store: any CartCaching = CartStore()) {
+    init(store: any CartCaching = CartStore(), automaticallyLoads: Bool = true) {
         self.store = store
-        Task { await reload() }
+        if automaticallyLoads {
+            Task { await reload() }
+        }
     }
 
     private func reload() async {

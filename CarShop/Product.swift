@@ -32,17 +32,7 @@ struct Product: Identifiable, Decodable, Hashable {
     let season: String
     let countryOfOrigin: String
 
-    var configurations: [String] { sizes.map(\.name) }
-    var engine: String { material }
-    var drivetrain: String { season }
-
     var formattedPrice: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.maximumFractionDigits = 0
-
-        let rubles = NSNumber(value: priceInKopecks / 100)
-        return "\(formatter.string(from: rubles) ?? rubles.stringValue) ₽"
+        PriceFormatter.format(kopecks: priceInKopecks)
     }
 }
